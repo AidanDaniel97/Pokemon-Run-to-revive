@@ -6,7 +6,7 @@
         </template>
 
         <template v-else>
-            <p>{{this.runs}}</p>
+            <p @click="cashInRun(run)" v-for="run in runs">{{run.distance}} <span v-if="run.cashedInRun">CASHED</span>     </p>
         </template>
 
     </div>
@@ -37,16 +37,16 @@ export default {
             }
         }
     },
-    methods: {
-        mounted() {
-            // check if user is auth
+    methods: { 
+        cashInRun(run){ 
+            this.$store.commit("cashInRun", {value: true, run: run})
         },
         async authUser() {
             const authURL = await strava.oauth.getRequestAccessURL({ scope: "activity:read" });
             window.location.href = authURL;
         },
         async getRuns() {
-            console.log("GEttying runs");
+            console.log("Getting runs");
             const runs = await strava.athlete.listActivities({ access_token: this.user.access_token });
             this.$store.commit("setRuns", runs);
         },
