@@ -6,7 +6,8 @@
         </template>
 
         <template v-else>
-            <p @click="cashInRun(run)" v-for="run in runs">{{run.distance}} <span v-if="run.cashedInRun">CASHED</span>     </p>
+            <h1>Total run in KM {{totalKM}}</h1>
+            <p @click="cashInRun(run)" v-for="run in runs">{{run.distance}} <span v-if="run.cashedInRun">CASHED</span> </p>
         </template>
 
     </div>
@@ -37,9 +38,9 @@ export default {
             }
         }
     },
-    methods: { 
-        cashInRun(run){ 
-            this.$store.commit("cashInRun", {value: true, run: run})
+    methods: {
+        cashInRun(run) {
+            this.$store.commit("cashInRun", { value: true, run: run });
         },
         async authUser() {
             const authURL = await strava.oauth.getRequestAccessURL({ scope: "activity:read" });
@@ -62,6 +63,14 @@ export default {
             "user",
             "runs",
         ]),
+        totalKM: function () {
+            var totalMetres = 0;
+            for (var run in this.runs) {
+                var currRun = this.runs[run];
+                totalMetres = totalMetres + currRun.distance;
+            }
+            return totalMetres / 1000;
+        },
     },
 };
 </script>
