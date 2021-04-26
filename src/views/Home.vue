@@ -6,14 +6,14 @@
         </template>
 
         <template v-else>
-
+            
            <Dropdown
-    :options="pokemon"  
-    :disabled="false" 
-    :selected="validatePokemon"
-    placeholder="Please select an option">
-</Dropdown>
-{{selectedPokemon}}
+                :options="pokemon"  
+                :disabled="false" 
+                v-on:selected="validatePokemon"
+                placeholder="Please select an option">
+            </Dropdown> 
+            <input></input>
             <button v-on:click="searchPokemon">Search</button>
 
             <h1>Pokemon</h1>
@@ -65,16 +65,14 @@ export default {
         }
     },
     methods: {
-        searchPokemon (){
-            console.log(this.pokemonSearch) 
-
+        searchPokemon (){ 
              axios
-            .get('https://pokeapi.co/api/v2/pokemon/' + this.pokemonSearch.toLowerCase())
+            .get('https://pokeapi.co/api/v2/pokemon/' + this.selectedPokemon.name.toLowerCase())
             .then(function(response){
                 this.$store.commit("addPokemonToParty", response.data);
             }.bind(this)); 
         },
-        validatePokemon (selection){
+        validatePokemon (selection){ 
             this.selectedPokemon = selection; 
         },
         cashInRun(run) {
