@@ -637,7 +637,9 @@ export default new Vuex.Store({
       state.user = user;
     },
     addPokemonToParty(state, pokemon){ 
-      state.party.push(pokemon)
+      pokemon.data.nickname = pokemon.nickname
+      pokemon.data.level = pokemon.level
+      state.party.push(pokemon.data)
     },
     cashInRun(state, data) {
       console.log(state.runs);
