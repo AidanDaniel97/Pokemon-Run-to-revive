@@ -6,8 +6,23 @@
         </template>
 
         <template v-else>
-            <h1>Total run in KM {{totalKM}}</h1>
-            <p @click="cashInRun(run)" v-for="run in runs">{{run.distance}} <span v-if="run.cashedInRun">CASHED</span> </p>
+
+           <Dropdown
+    :options="pokemon"  
+    :disabled="false" 
+    :selected="validatePokemon"
+    placeholder="Please select an option">
+</Dropdown>
+{{selectedPokemon}}
+            <button v-on:click="searchPokemon">Search</button>
+
+            <h1>Pokemon</h1>
+            <div v-for="pokemon in party">
+                <img v-if="pokemon.sprites" :src="pokemon.sprites.front_default">
+            </div>
+
+            <h1>Available points: {{formattedDistance(bankedPoints)}}</h1>
+            <p @click="cashInRun(run)" v-for="run in runs">{{formattedDistance(run.distance) }} km <span v-if="run.cashedInRun">CASHED</span> </p>
         </template>
 
     </div>
@@ -16,6 +31,8 @@
 <script>
 import { default as strava, Strava } from "strava-v3";
 import { mapState } from "vuex";
+import axios from 'axios';
+import Dropdown from 'vue-simple-search-dropdown';
 
 strava.config({
     access_token: process.env.VUE_APP_STRAVA_ACCESS_TOKEN,
@@ -26,6 +43,15 @@ strava.config({
 
 export default {
     name: "Home",
+    data() {
+        return {
+            pokemonSearch: '',
+            selectedPokemon: null
+        }
+    },
+    components:{
+        Dropdown
+    },
     async mounted() {
         if (this.urlCode && !this.user) {
             // Strava returns code after auth
@@ -39,8 +65,20 @@ export default {
         }
     },
     methods: {
+        searchPokemon (){
+            console.log(this.pokemonSearch) 
+
+             axios
+            .get('https://pokeapi.co/api/v2/pokemon/' + this.pokemonSearch.toLowerCase())
+            .then(function(response){
+                this.$store.commit("addPokemonToParty", response.data);
+            }.bind(this)); 
+        },
+        validatePokemon (selection){
+            this.selectedPokemon = selection; 
+        },
         cashInRun(run) {
-            this.$store.commit("cashInRun", { value: true, run: run });
+            this.$store.commit("cashInRun", { value: !run.cashedInRun, run: run });
         },
         async authUser() {
             const authURL = await strava.oauth.getRequestAccessURL({ scope: "activity:read" });
@@ -51,6 +89,9 @@ export default {
             const runs = await strava.athlete.listActivities({ access_token: this.user.access_token });
             this.$store.commit("setRuns", runs);
         },
+        formattedDistance (totalMetres) { // takes metres and converts to km
+            return (totalMetres / 1000).toFixed(2)
+        }
     },
     computed: {
         urlCode: function () {
@@ -62,14 +103,21 @@ export default {
             // map this.count to store.state.count
             "user",
             "runs",
+            "bankedPoints",
+            "party",
+            "graveyard",
+            "pokemon"
         ]),
         totalKM: function () {
             var totalMetres = 0;
             for (var run in this.runs) {
                 var currRun = this.runs[run];
-                totalMetres = totalMetres + currRun.distance;
+                if(!currRun.cashedInRun){
+                    totalMetres = totalMetres + currRun.distance;
+                }
+                
             }
-            return totalMetres / 1000;
+            return this.formattedDistance(totalMetres);
         },
     },
 };
