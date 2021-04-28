@@ -9,8 +9,7 @@ export default new Vuex.Store({
     bankedPoints: 0,
     runs: [],
     user: null,
-    party: [],
-    graveyard: [],
+    party: [], 
     pokemon: [
       {
           "name": "Turtwig",
@@ -638,8 +637,24 @@ export default new Vuex.Store({
     },
     addPokemonToParty(state, pokemon){ 
       pokemon.data.nickname = pokemon.nickname
-      pokemon.data.level = pokemon.level
+      pokemon.data.level = pokemon.level 
       state.party.push(pokemon.data)
+    },
+    markAsDead(state, pokemon){
+      var partyIndex = state.party.findIndex(x => x.nickname === pokemon.nickname)
+      var currPokemon = state.party[partyIndex]
+      Vue.set(currPokemon, 'isDead', true) 
+    },
+    markAsRevived(state, pokemon){
+      var partyIndex = state.party.findIndex(x => x.nickname === pokemon.nickname)
+      var currPokemon = state.party[partyIndex]
+      Vue.set(currPokemon, 'isDead', false)  
+     if(currPokemon.reviveCount >= 0){ 
+      console.log(currPokemon.reviveCount)
+      currPokemon.reviveCount = currPokemon.reviveCount + 1
+     }else{
+      Vue.set(currPokemon, 'reviveCount', 0) 
+     }
     },
     cashInRun(state, data) {
       console.log(state.runs);
@@ -665,10 +680,7 @@ export default new Vuex.Store({
     },
     party: (state) => {
       return state.party;
-    },
-    graveyard: (state) => {
-      return state.graveyard;
-    },
+    }, 
   },
   plugins: [new VuexPersistence().plugin],
 });
