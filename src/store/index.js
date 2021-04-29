@@ -635,8 +635,13 @@ export default new Vuex.Store({
     setUser(state, user) {
       state.user = user;
     },
+    setPokemonLevel(state,pokemonObj){
+      var pokemon = state.party.find(x => x.partyID === pokemonObj.pokemon.partyID)
+      pokemon.level = pokemonObj.level
+    },  
     removePokemonFromParty(state, pokemon){
       var index = state.party.findIndex(x => x.partyID === pokemon.partyID)
+      state.pokemon.splice(index, 1)
     },
     addPokemonToParty(state, pokemon){ 
       pokemon.data.nickname = pokemon.nickname

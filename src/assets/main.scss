@@ -1,5 +1,13 @@
 @import '~bulma';
 
+html{
+    height:100%;
+    background: #eaaa00;
+}
+body{
+    height:100%;
+    padding:0px 10px;
+}
 
 .control-section{
     position:absolute;
@@ -23,4 +31,34 @@
         -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
         filter: grayscale(100%);
     }
+}
+
+
+.run-bank{
+    font-size:35px;
+}
+
+.party{
+    .card{
+
+        background: #ffffff2e;
+        border-left: 3px solid black;
+        border-bottom: 3px solid black;
+        border-top: 1px solid black; 
+        border-right: 1px solid black;
+    
+        .card-footer{
+            border:0px;
+            .card-footer-item{
+                margin:10px;   
+                &:not(:last-child){
+                    border:0px;
+            }
+            }
+        }
+    }
+}
+
+.modal-content{
+    width:80%;
 }
