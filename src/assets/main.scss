@@ -1,1 +1,26 @@
 @import '~bulma';
+
+
+.control-section{
+    position:absolute;
+    top:0px;
+    right:0px;
+}
+
+.dropdown-input{
+    margin: 0 auto;
+    width:100%!important;
+    max-width:100%!important;
+    padding-bottom: calc(0.5em - 1px);
+    padding-left: calc(0.75em - 1px);
+    padding-right: calc(0.75em - 1px);
+    padding-top: calc(0.5em - 1px);
+}
+
+
+.pokemon-sprite{
+    &.is-dead{
+        -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+        filter: grayscale(100%);
+    }
+}

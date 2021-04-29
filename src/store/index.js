@@ -635,18 +635,22 @@ export default new Vuex.Store({
     setUser(state, user) {
       state.user = user;
     },
+    removePokemonFromParty(state, pokemon){
+      var index = state.party.findIndex(x => x.partyID === pokemon.partyID)
+    },
     addPokemonToParty(state, pokemon){ 
       pokemon.data.nickname = pokemon.nickname
       pokemon.data.level = pokemon.level 
+      pokemon.data.partyID = (Math.random() * 1000).toFixed()
       state.party.push(pokemon.data)
     },
     markAsDead(state, pokemon){
-      var partyIndex = state.party.findIndex(x => x.nickname === pokemon.nickname)
+      var partyIndex = state.party.findIndex(x => x.partyID === pokemon.partyID)
       var currPokemon = state.party[partyIndex]
       Vue.set(currPokemon, 'isDead', true) 
     },
     markAsRevived(state, pokemon){
-      var partyIndex = state.party.findIndex(x => x.nickname === pokemon.nickname)
+      var partyIndex = state.party.findIndex(x => x.partyID === pokemon.partyID)
       var currPokemon = state.party[partyIndex]
       Vue.set(currPokemon, 'isDead', false)  
      if(currPokemon.reviveCount >= 0){ 
