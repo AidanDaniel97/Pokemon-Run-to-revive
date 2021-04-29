@@ -1,5 +1,7 @@
 <template>
   <div class="home">
+
+      <h1> {{bankedPoints.toFixed(1)}}</h1>
     <template v-if="!user">
       <button @click="authUser()">Login</button>
     </template>
@@ -30,7 +32,8 @@
                     </p>
                     <p class="subtitle is-6"><span  class="tag is-info is-light"
                         >lvl {{pokemon.level}}</span
-                      > {{ pokemon.name }}  </p> 
+                      > {{ pokemon.name }}  
+                      <br><blockquote v-if="pokemon.isDead"><i>"{{pokemon.obituary}}"</i></blockquote></p> 
                     <!-- <p class="subtitle is-6">Revived {{pokemon.reviveCount}}</p> -->
                   </div>
                 </div>
@@ -50,6 +53,12 @@
                   @click="markAsDead(pokemon)"
                   class="card-footer-item"
                   >Set as dead</a
+                >
+                <a
+                  href="#" 
+                  @click="setLevel(pokemon)"
+                  class="card-footer-item"
+                  >Set level</a
                 >
                 <!-- <a href="#" class="card-footer-item">Edit</a>  -->
               </footer>
@@ -145,6 +154,56 @@
         aria-label="close"
       ></button>
     </div>
+
+
+
+
+
+    <div class="modal" :class="{ 'is-active': deadModal }">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="card">
+          <div class="card-content">
+            <div class="content">
+              <form @submit="markAsDeadConfirm">
+                
+                <div class="field">
+                  <label class="label">Obituary</label>
+                  <div class="control">
+                    <input
+                      class="input is-success"
+                      type="text" 
+                      placeholder="Obituary"
+                      v-model="deadComment"
+                    />
+                  </div>
+                </div>
+
+
+                <div class="field is-grouped">
+                  <div class="control">
+                    <button class="button is-link" type="submit">Confirm</button>
+                  </div>
+                  <div class="control">
+                    <button
+                      class="button is-link is-light"
+                      v-on:click="markAsDeadClose"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        v-on:click="markAsDeadClose"
+        class="modal-close is-large"
+        aria-label="close"
+      ></button>
+    </div>
   </div>
 </template>
 
@@ -171,6 +230,9 @@ export default {
       pokemonLevel: null,
       addModal: false,
       showDead: false,
+      deadPokemon: null,
+      deadComment: "",
+      deadModal: null
     };
   },
   components: {
@@ -190,7 +252,18 @@ export default {
   },
   methods: {
     markAsDead(pokemon) {
-      this.$store.commit("markAsDead", pokemon);
+        this.deadModal = true
+        this.deadPokemon = pokemon
+    },
+    markAsDeadClose(){ 
+        this.deadModal = false
+        this.deadPokemon = null
+        this.deadComment = ""
+    },
+    markAsDeadConfirm(e){  
+      e.preventDefault();
+      this.$store.commit("markAsDead", {pokemon: this.deadPokemon, comment: this.deadComment});
+      this.markAsDeadClose()
     },
     markAsRevived(pokemon) {
       this.$store.commit("markAsRevived", pokemon);
@@ -244,11 +317,7 @@ export default {
         }.bind(this)
       );
       this.$store.commit("setRuns", runs);
-    },
-    formattedDistance(totalMetres) {
-      // takes metres and converts to km
-      return (totalMetres / 1000).toFixed(2);
-    },
+    }, 
   },
   computed: {
     urlCode: function() {
