@@ -1,64 +1,67 @@
-@import '~bulma';
+@import "~bulma";
 
-html{
-    height:100%;
-    background: #eaaa00;
+html {
+  height: 100%;
+  background: #eaaa00;
 }
-body{
-    height:100%;
-    padding:0px 10px;
-}
-
-.control-section{
-    position:absolute;
-    top:0px;
-    right:0px;
+body {
+  height: 100%;
+  padding: 0px 10px;
 }
 
-.dropdown-input{
-    margin: 0 auto;
-    width:100%!important;
-    max-width:100%!important;
-    padding-bottom: calc(0.5em - 1px);
-    padding-left: calc(0.75em - 1px);
-    padding-right: calc(0.75em - 1px);
-    padding-top: calc(0.5em - 1px);
+.control-section {
+  position: absolute;
+  top: 0px;
+  right: 0px;
 }
 
-
-.pokemon-sprite{
-    &.is-dead{
-        -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-        filter: grayscale(100%);
-    }
+.dropdown-input {
+  margin: 0 auto;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-bottom: calc(0.5em - 1px);
+  padding-left: calc(0.75em - 1px);
+  padding-right: calc(0.75em - 1px);
+  padding-top: calc(0.5em - 1px);
 }
 
-
-.run-bank{
-    font-size:35px;
+.pokemon-sprite {
+  &.is-dead {
+    -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+  }
 }
 
-.party{
-    .card{
+.run-bank {
+  font-size: 35px;
+}
 
-        background: #ffffff2e;
-        border-left: 3px solid black;
-        border-bottom: 3px solid black;
-        border-top: 1px solid black; 
-        border-right: 1px solid black;
-    
-        .card-footer{
-            border:0px;
-            .card-footer-item{
-                margin:10px;   
-                &:not(:last-child){
-                    border:0px;
-            }
-            }
+.party {
+  .card {
+    background: white;
+    border-left: 3px solid black;
+    border-bottom: 3px solid black;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    border-radius: 15px;
+    overflow:hidden;
+    .card-footer {
+      border: 0px;
+      .card-footer-item {
+        margin: 0px;
+        border-radius: 0px !important;
+        transition: all 0.2s;
+        &:hover {  
+          transform: translate(0px, -3px);
         }
+        &:not(:last-child) {
+          border: 0px;
+        }
+      }
     }
+  }
 }
 
-.modal-content{
-    width:80%;
+.modal-content {
+  width: 80%;
 }

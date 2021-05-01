@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1 class="run-bank">Available runs: {{ bankedPoints.toFixed(1) }}KM</h1>
+    <h1 @dblclick.stop="setRunAmount" class="run-bank">Available runs: <strong>{{ bankedPoints.toFixed() }}HM</strong></h1>
     <h2><strong>@ThatAkwardSmile</strong></h2>
     <template v-if="!user">
       <button @click="authUser()">Login</button>
@@ -9,7 +9,7 @@
     <template v-else>
       <div class="container mt-4">
         <div class="columns is-mobile is-centered is-multiline party">
-          <div class="column is-half" v-for="pokemon in pokemonList">
+          <div class="column is-4-tablet is-12-mobile" v-for="pokemon in pokemonList">
             <div class="card">
               <div class="card-image">
                 <figure class="image is-128x128 container">
@@ -26,14 +26,13 @@
               <div class="card-content px-1 py-2">
                 <div class="media">
                   <div class="media-content">
-                    <p class="title is-4">
-                      {{ pokemon.nickname }}
-                      <span v-if="pokemon.isDead">(RIP)</span>
+                    <p class="title is-4 mb-1">
+                      {{ pokemon.nickname }} 
                     </p>
-                    <p class="subtitle is-6 mb-0">
-                      <span class="tag is-info is-light"
-                        >lvl {{ pokemon.level }}</span
-                      >
+                    <p class="tag is-info is-light"
+                        >lvl {{ pokemon.level }}</p
+                      > 
+                    <p class="subtitle is-6 mb-0"> 
                       {{ pokemon.name }} <br />
                       <blockquote v-if="pokemon.isDead">
                         <i>"{{ pokemon.obituary }}"</i>
@@ -48,7 +47,7 @@
                 <button
                   v-if="pokemon.isDead"
                   @click="markAsRevived(pokemon)"
-                  class="card-footer-item button is-info card-footer-item is-small"
+                  class="card-footer-item button is-info is-small"
                 >
                   Revive
                 </button>
@@ -58,7 +57,7 @@
                 <button
                   v-else
                   @click="markAsDead(pokemon)"
-                  class="card-footer-item button is-info card-footer-item is-danger is-small"
+                  class="card-footer-item button is-info is-danger is-small"
                 >
                   Set as dead
                 </button>
@@ -74,18 +73,18 @@
                 <!-- <a href="#" class="card-footer-item">Edit</a>  -->
               </footer>
             </div>
-          </div>
+          </div> 
         </div>
       </div>
 
       <div class="control-section">
-        <button class="button add-btn" v-on:click="openAddModal">
+        <button class="button is-info is-light mr-1 add-btn" v-on:click="openAddModal">
           <span class="icon is-small">
             <span>+</span>
           </span>
         </button>
 
-        <button class="button add-btn" v-on:click="showDead = !showDead">
+        <button class="button is-info is-light add-btn" v-on:click="showDead = !showDead">
           <span class="icon is-small">
             <svg
               v-if="!showDead"
@@ -118,6 +117,7 @@
         </button>
       </div>
     </template>
+ 
 
     <div class="modal" :class="{ 'is-active': addModal }">
       <div class="modal-background"></div>
@@ -126,8 +126,9 @@
           <div class="card-content">
             <div class="content">
               <form @submit="addPokemonToParty">
+                  <h1>Add Pokemon</h1>
                 <div class="field">
-                  <label class="label">Name</label>
+                  <label class="label">Pokemon</label>
                   <div class="control has-text-centered">
                     <Dropdown
                       autocomplete="off"
@@ -313,6 +314,8 @@ export default {
       deadComment: "",
       deadModal: null,
       levelModal: null,
+      runModal: null,
+      runAmount: 0,
       selectedPokemonLevel: null,
       editingPokemon: null,
     };
@@ -333,10 +336,14 @@ export default {
     }
   },
   methods: {
-      openAddModal(){
-          this.addModal = true
-          this.showDead = false
-      },
+    setRunAmount(){
+        this.runModal = true
+        this.runAmount = false
+    },
+    openAddModal(){
+        this.addModal = true
+        this.showDead = false
+    },
     setLevel(pokemon) {
       this.editingPokemon = pokemon;
       this.levelModal = true;
@@ -408,11 +415,13 @@ export default {
       window.location.href = authURL;
     },
     async getRuns() {
-      console.log("Getting runs");
+        var d = new Date(); 
+        d.setHours(d.getHours() - 12);
+
       const runs = await strava.athlete.listActivities(
         {
           access_token: this.user.access_token,
-          after: new Date().getTime() / 1000
+          after: d.getTime() / 1000
         },
         function(err, payload, limits) {
           if (!err) {

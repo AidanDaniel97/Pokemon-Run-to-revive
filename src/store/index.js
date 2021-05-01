@@ -624,7 +624,7 @@ export default new Vuex.Store({
 
         if (!state.runs.find((x) => x.id === currRun.id)) { // if the runs doesnt exist
           // cash in run 
-          state.bankedPoints = state.bankedPoints + (currRun.distance / 1000)
+          state.bankedPoints = state.bankedPoints + (currRun.distance / 100)
           currRun["cashedInRun"] = true;
           // push to runs array
           state.runs.push(currRun);
@@ -639,9 +639,9 @@ export default new Vuex.Store({
       var pokemon = state.party.find(x => x.partyID === pokemonObj.pokemon.partyID)
       pokemon.level = pokemonObj.level
     },  
-    removePokemonFromParty(state, pokemon){
-      var index = state.party.findIndex(x => x.partyID === pokemon.partyID)
-      state.pokemon.splice(index, 1)
+    removePokemonFromParty(state, pokemon){ 
+      var index = state.party.findIndex(x => x.partyID === pokemon.partyID) 
+      state.party.splice(index, 1)
     },
     addPokemonToParty(state, pokemon){ 
       pokemon.data.nickname = pokemon.nickname
@@ -657,17 +657,22 @@ export default new Vuex.Store({
       Vue.set(currPokemon, 'obituary', deadObj.comment) 
     },
     markAsRevived(state, pokemon){
-      var partyIndex = state.party.findIndex(x => x.partyID === pokemon.partyID)
-      var currPokemon = state.party[partyIndex]
-      Vue.set(currPokemon, 'isDead', false)  
-      if(currPokemon.reviveCount >= 0){ 
-        console.log(currPokemon.reviveCount)
-        currPokemon.reviveCount = currPokemon.reviveCount + 1
+      if(pokemon.level <= state.bankedPoints){
+        var partyIndex = state.party.findIndex(x => x.partyID === pokemon.partyID)
+        var currPokemon = state.party[partyIndex]
+        Vue.set(currPokemon, 'isDead', false)  
+        if(currPokemon.reviveCount >= 0){ 
+          console.log(currPokemon.reviveCount)
+          currPokemon.reviveCount = currPokemon.reviveCount + 1
+        }else{
+          Vue.set(currPokemon, 'reviveCount', 0) 
+        }
+   
+        state.bankedPoints = state.bankedPoints - currPokemon.level
       }else{
-        Vue.set(currPokemon, 'reviveCount', 0) 
+        alert(`Not enough points! Go run ${ pokemon.level - state.bankedPoints} hm more!`)
       }
  
-      state.bankedPoints = state.bankedPoints - currPokemon.level
     },
     cashInRun(state, data) {
       console.log(state.runs);
