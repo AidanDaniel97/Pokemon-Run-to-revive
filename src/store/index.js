@@ -10,6 +10,7 @@ export default new Vuex.Store({
     runs: [],
     user: null,
     party: [], 
+    routesMetOn: [],
     pokemon: [
       {
           "name": "Turtwig",
@@ -643,11 +644,18 @@ export default new Vuex.Store({
       var index = state.party.findIndex(x => x.partyID === pokemon.partyID) 
       state.party.splice(index, 1)
     },
-    addPokemonToParty(state, pokemon){ 
-      pokemon.data.nickname = pokemon.nickname
-      pokemon.data.level = pokemon.level 
-      pokemon.data.partyID = (Math.random() * 1000).toFixed()
-      state.party.push(pokemon.data)
+    addPokemonToParty(state, pokemon){  
+      if(state.routesMetOn.indexOf(pokemon.metOn.toLowerCase()) <= -1){
+        pokemon.data.nickname = pokemon.nickname
+        pokemon.data.level = pokemon.level 
+        pokemon.data.metOn = pokemon.metOn 
+        pokemon.data.partyID = (Math.random() * 1000).toFixed()
+        state.party.push(pokemon.data)
+        state.routesMetOn.push(pokemon.metOn)
+      } else {
+           alert('Already used this route')
+      }
+      
     },
     markAsDead(state, deadObj){
       var pokemon = deadObj.pokemon

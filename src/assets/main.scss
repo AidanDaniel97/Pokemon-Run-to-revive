@@ -59,6 +59,28 @@ body {
         }
       }
     }
+
+    .pokemon-sprite{
+      height: 96px;
+      width: 128px;
+      object-fit: contain;
+    } 
+    
+    .subtitle {
+      display:flex;
+      justify-content: space-around;
+      vertical-align: middle;
+      margin-top:10px;
+      svg{
+        width:20px;
+        height:20px;
+        margin-right:5px;
+      }
+      div{
+        display:flex;
+        vertical-align: middle;
+      }
+    }
   }
 }
 

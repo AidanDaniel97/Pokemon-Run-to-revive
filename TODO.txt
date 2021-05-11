@@ -4,11 +4,8 @@ Specific run dates on strava endpoint
 Clear runs button in case i need to manually clear them 
 Manually add to runs 
 
-Mark dead pokemon as revived with a count of how many times they are revived also removing points
-
-
-Calculate used points and remove from total
+ 
 
 update colours to brand orange
-
-refresh token needs implementing
+ 
+ 
