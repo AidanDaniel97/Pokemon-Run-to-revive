@@ -36,7 +36,8 @@
                                                 </svg>
                                                 {{pokemon.reviveCount > 0 ? pokemon.reviveCount : '0'}}
                                             </div>
-                                            <div> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                            <div> 
+                                                <svg @dblclick.stop="listRoutes(pokemon)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                                     <path d="M12 0c-4.198 0-8 3.403-8 7.602 0 4.198 3.469 9.21 8 16.398 4.531-7.188 8-12.2 8-16.398 0-4.199-3.801-7.602-8-7.602zm0 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3z" />
                                                 </svg>
                                                 {{pokemon.metOn}}</div>
@@ -225,6 +226,43 @@
             <button v-on:click="setLevelClose" class="modal-close is-large" aria-label="close"></button>
         </div>
 
+
+
+        <div class="modal" :class="{ 'is-active': setPokemonNameModal }">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <form @submit="setPokemonNameConfirm">
+                                <div class="field">
+                                    <label class="label">Set pokemon</label>
+                                    <div class="control"> 
+                                        <Dropdown autocomplete="off" :options="pokemon" :disabled="false" v-on:selected="setNewPokemon" placeholder="Please select an option">
+                                        </Dropdown>
+                                    </div>
+                                </div>
+
+                                <div class="field is-grouped">
+                                    <div class="control">
+                                        <button class="button is-link" type="submit">
+                                            Confirm
+                                        </button>
+                                    </div>
+                                    <div class="control">
+                                        <button class="button is-link is-light" v-on:click="setPokemonNameModal = false">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button v-on:click="setPokemonNameModal = false" class="modal-close is-large" aria-label="close"></button>
+        </div>
+
         <div class="modal" :class="{ 'is-active': showRuns }">
             <div class="modal-background"></div>
             <div class="modal-content">
@@ -312,11 +350,10 @@
                         <div class="content">
                             <form @submit="addRouteConfirm">
                                 <div class="field">
-                                    <label class="label">Add encounter </label>
-
-                                    <Dropdown autocomplete="off" :options="pokemon" :disabled="false" v-on:selected="setRoutePokemon" placeholder="Please select an option">
-                                    </Dropdown>
-
+                                    <label class="label">Add encounter </label> 
+                                    <Dropdown v-if="!routeMetOnPartyPokemon" type="search"  :options="pokemon" :disabled="false" v-on:selected="setRoutePokemon" placeholder="Please select an option">
+                                    </Dropdown> 
+                                    <p v-if="routeMetOnPartyPokemon">Adding encounter for <strong>{{routeMetOnPartyPokemon.nickname}}   </strong></p>
                                 </div>
 
                                 <div class="field">
@@ -389,9 +426,13 @@ export default {
             runAmount: 0,
             selectedPokemonLevel: null,
             routeMetOnPokemon: null,
+            routeMetOnPartyPokemon: null,
             routeMetOnName: null,
             routeMetOnComment: null,
             editingPokemon: null,
+            setPokemonNameModal: null,
+            selectedPokemonNameChange: null,
+            newPokemonName: null,
         };
     },
     components: {
@@ -411,7 +452,27 @@ export default {
     },
     methods: {
         setPokemonName(pokemon) {
-            console.log("Trigger evo modal");
+            this.selectedPokemonNameChange = pokemon
+            this.setPokemonNameModal = true
+        }, 
+        setPokemonNameConfirm(e) {
+            e.preventDefault();
+axios.get("https://pokeapi.co/api/v2/pokemon/" + this.newPokemonName.name.toLowerCase()).then(
+                function (response) {
+            this.$store.commit("setPokemonName", {
+                newPokemon: response.data,
+                pokemon: this.selectedPokemonNameChange,
+                newName: this.newPokemonName,
+            });
+            this.setPokemonNameModalClose();
+                }.bind(this));
+
+          
+        },
+        setPokemonNameModalClose(){
+            this.setPokemonNameModal= null;
+            this.selectedPokemonNameChange= null;
+            this.newPokemonName=null;
         },
         formatDate(date) {
             var d = new Date(date),
@@ -441,7 +502,12 @@ export default {
             this.runModal = true;
             this.runAmount = false;
         },
-        listRoutes() {
+        listRoutes(pokemon) {
+            if(pokemon){
+                this.routeMetOnPartyPokemon = pokemon
+            }else{
+                this.routeMetOnPartyPokemon = ''
+            }
             this.routesModal = true;
         },
         openAddModal() {
@@ -458,14 +524,23 @@ export default {
             this.routeMetOnName = "";
             this.routeMetOnComment = "";
             this.routeMetOnPokemon = "";
+            this.routeMetOnPartyPokemon = "";
         },
         addRouteConfirm(e) {
             e.preventDefault();
-            this.$store.commit("addRouteEncounter", {
-                pokemon: this.routeMetOnPokemon,
-                routeName: this.routeMetOnName,
-                comment: this.routeMetOnComment,
-            });
+            if(this.routeMetOnPartyPokemon){
+this.$store.commit("setPartyPokemonRoute", {
+                    pokemon: this.routeMetOnPartyPokemon,
+                    routeName: this.routeMetOnName,
+                    comment: this.routeMetOnComment,
+                });
+            }else{
+                this.$store.commit("addRouteEncounter", {
+                    pokemon: this.routeMetOnPokemon,
+                    routeName: this.routeMetOnName,
+                    comment: this.routeMetOnComment,
+                });
+            }
             this.setRouteClose(e);
         },
         setLevel(pokemon) {
@@ -537,8 +612,14 @@ export default {
         validatePokemon(selection) {
             this.selectedPokemon = selection;
         },
+        setNewPokemon(selection) {
+            this.newPokemonName = selection;
+        }, 
         setRoutePokemon(selection) {
             this.routeMetOnPokemon = selection;
+        },
+        setRoutePartyPokemon(selection) {
+            this.routeMetOnPartyPokemon = selection;
         },
         async authUser() {
             const authURL = await strava.oauth.getRequestAccessURL({

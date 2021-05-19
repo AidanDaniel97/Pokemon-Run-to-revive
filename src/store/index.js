@@ -634,6 +634,17 @@ export default new Vuex.Store({
         }
       }
     },
+    setPokemonName(state, obj){
+      var currPokemon = state.party.find(x => x.partyID === obj.pokemon.partyID)
+      
+      // currPokemon.data = obj.newPokemon 
+      currPokemon.species = obj.newPokemon.species
+      currPokemon.sprites = obj.newPokemon.sprites
+      currPokemon.moves = obj.newPokemon.moves
+      currPokemon.name = obj.newPokemon.name
+      console.log(currPokemon, obj.newPokemon)
+ 
+    },
     setUser(state, user) {
       state.user = user;
     },
@@ -661,6 +672,22 @@ export default new Vuex.Store({
         state.routesMetOn.push({
           pokemon: pokemon,
           routeName: pokemon.metOn,
+        });
+      } else {
+        alert("Already used this route");
+      }
+    },
+    setPartyPokemonRoute(state, data) {
+      var routeUsed = state.routesMetOn.find(
+        (x) => x.routeName.toLowerCase() === data.routeName.toLowerCase()
+      );
+ 
+
+      if (!routeUsed) {
+        data.pokemon.metOn = data.routeName 
+        state.routesMetOn.push({
+          pokemon: data.pokemon,
+          routeName: data.pokemon.metOn,
         });
       } else {
         alert("Already used this route");
